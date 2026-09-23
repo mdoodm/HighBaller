@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>HighBaller_IL2CPP</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net6.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+
+  <ItemGroup>
+    <PackageReference Include="HarmonyX" Version="2.10.2"/>
+    <PackageReference Include="LavaGang.MelonLoader" Version="0.7.2"/>
+  </ItemGroup>
+  <ItemGroup Label="IL2CPP-Refs">
+    <PackageReference Include="RefGen.Schedule-I.Il2Cpp" Version="0.4.6-f12" />
+    <PackageReference Include="Il2CppInterop.Common" Version="1.5.1"/>
+    <PackageReference Include="Il2CppInterop.Runtime" Version="1.5.1"/>
+  </ItemGroup>
+</Project>
