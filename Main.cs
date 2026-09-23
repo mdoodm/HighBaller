@@ -1,5 +1,3 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -775,7 +773,6 @@ public class Main : MelonMod
 				Log("Error finding ProductManager: " + ex.Message, error: false, warning: false, bypassConfig: true);
 			}
 		}
-		this.OnSceneWasLoaded(buildIndex, sceneName);
 	}
 
 	public static float EvaluatePriceAcceptance(ProductDefinition product, List<CustomerAppeal> customerAppeals, float price)

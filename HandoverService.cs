@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace HighBaller;
 
-[HarmonyPatch(typeof(Customer), "HandoverChosen")]
+[HarmonyPatch(typeof(Customer), "CompleteContractDialogueChosen")]
 public static class HandoverService
 {
 	public static bool Prefix(Customer __instance)
@@ -121,7 +121,7 @@ public static class HandoverService
 			copy.Quantity = selectedPackage.AvailableQuantity;
 			handoverItems.Add(copy);
 		}
-		customer.ProcessHandover(HandoverScreen.EHandoverOutcome.Finalize, customer.CurrentContract, handoverItems, true, true);
+		customer.ProcessHandover(customer.CurrentContract, handoverItems, true, true);
 		return false;
 	}
 

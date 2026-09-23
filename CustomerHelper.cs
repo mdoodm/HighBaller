@@ -29,7 +29,7 @@ public static class CustomerHelper
 			Main.Log("Could not resolve customer because the conversation is null.", error: false, warning: true);
 			return null;
 		}
-		string contactName = conversation.contactName;
+		string contactName = conversation.ContactName;
 		foreach (Customer knownCustomer in GetKnownCustomers())
 		{
 			if (knownCustomer != null && knownCustomer.NPC != null)
