@@ -9,6 +9,8 @@ This tool can be used to package the mod for distribution on Nexus and Thunderst
 
 from rich.console import Console
 from rich.traceback import install
+import io
+import subprocess
 import typer
 from pathlib import Path
 import zipfile
@@ -59,8 +61,7 @@ def get_build_paths() -> dict[str, Path]:
         "fomod_info": fomod_dir / "info.xml",
         "fomod_moduleconfig": fomod_dir / "ModuleConfig.xml",
         "readme": parent_dir / "README.md",
-        "changelog": parent_dir / "CHANGELOG.md",
-        "license": parent_dir / "LICENSE.md",
+        "license": parent_dir / "LICENSE",
         "mod_il2cpp": bin_dir
         / f"{IL2CPP_BUILD}"
         / "net6"
@@ -107,7 +108,6 @@ def validate_files(
         "fomod_info",
         "fomod_moduleconfig",
         "readme",
-        "changelog",
     ]
 
     if not skip_il2cpp:
@@ -192,6 +192,44 @@ def create_modified_moduleconfig(
     return ET.tostring(root, encoding="unicode")
 
 
+def create_source_archive() -> bytes:
+    """Create a ZIP archive of the source tree."""
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(parent_dir),
+            "ls-files",
+            "--cached",
+            "--others",
+            "--exclude-standard",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    buffer = io.BytesIO()
+
+    with zipfile.ZipFile(
+        buffer,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
+    ) as zipf:
+        for relative_path in result.stdout.splitlines():
+            path = parent_dir / relative_path
+            if path.is_file():
+                zipf.write(path, relative_path)
+
+        git_dir = parent_dir / ".git"
+        for path in git_dir.rglob("*"):
+            if path.is_file():
+                zipf.write(path, path.relative_to(parent_dir))
+
+    return buffer.getvalue()
+
+
 def create_package(
     paths: dict[str, Path],
     skip_mono: bool = False,
@@ -213,7 +251,6 @@ def create_package(
         paths["ts_manifest"]: "manifest.json",
         paths["fomod_info"]: "fomod/info.xml",
         paths["readme"]: "README.md",
-        paths["changelog"]: "CHANGELOG.md",
     }
 
     if crossplatform:
@@ -232,7 +269,6 @@ def create_package(
         with zipfile.ZipFile(package_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for file, arcname in files_to_include.items():
                 zipf.write(file, arcname)
-            # Icon written twice: once for Thunderstore (root), once for FOMOD (fomod/)
             zipf.write(paths["icon"], "fomod/icon.png")
 
             if skip_mono or skip_il2cpp or crossplatform:
@@ -242,6 +278,8 @@ def create_package(
                 zipf.writestr("fomod/ModuleConfig.xml", modified_config)
             else:
                 zipf.write(paths["fomod_moduleconfig"], "fomod/ModuleConfig.xml")
+
+            zipf.writestr("source.zip", create_source_archive())
 
     return package_path
 
@@ -277,7 +315,6 @@ def package(
             "fomod_info",
             "fomod_moduleconfig",
             "readme",
-            "changelog",
             "mod_mono",
         ]
         validate_required_files(paths, required_keys)
