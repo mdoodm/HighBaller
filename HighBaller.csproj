@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="build/paths.props"/>
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <RootNamespace>HighBaller</RootNamespace>
+
+        <Version>2.7.11</Version>
+        <Author>zocke18r, SFox, Virtunerd, k0Mods</Author>
+        <Description>Deal optimizer, auto counter offer, auto deal completion</Description>
+
+        <Configurations>Mono;IL2CPP</Configurations>
+    </PropertyGroup>
+
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Mono'">
+        <DefineConstants>$(DefineConstants);MONO</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'IL2CPP'">
+        <DefineConstants>$(DefineConstants)</DefineConstants>
+    </PropertyGroup>
+
+
+    <Import Project="build/conditions.props"/>
+
+    <ItemGroup Label="Publicizer" Condition="'$(IsMono)' == 'true'">
+        <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <Publicize Include="Assembly-CSharp"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="HarmonyX" Version="2.10.2"/>
+        <PackageReference Include="LavaGang.MelonLoader" Version="0.7.2"/>
+    </ItemGroup>
+    <ItemGroup Label="IL2CPP-Refs" Condition="'$(IsMono)' != 'true'">
+        <PackageReference Include="RefGen.Schedule-I.Il2Cpp" Version="0.4.7-f6" />
+        <PackageReference Include="Il2CppInterop.Common" Version="1.5.1"/>
+        <PackageReference Include="Il2CppInterop.Runtime" Version="1.5.1"/>
+    </ItemGroup>
+    <ItemGroup Label="Mono-Refs" Condition="'$(IsMono)' == 'true'">
+        <PackageReference Include="RefGen.Schedule-I.Mono" Version="0.4.7-f6"/>
+    </ItemGroup>
+
+    <Import Project="build\events\preBuild.targets"/>
+    <Import Project="build\events\postBuild.targets"/>
+
+</Project>

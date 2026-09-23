@@ -1,0 +1,10 @@
+{
+    "name": "HighBaller",
+    "version_number": "2.7.11",
+    "website_url": "",
+    "description": "Deal optimizer, auto counter offer, auto deal completion",
+    "dependencies": [
+        "LavaGang-MelonLoader-0.7.2",
+        "hdlmrell-OTCLoader-1.0.5"
+    ]
+}
