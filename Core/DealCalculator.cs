@@ -48,8 +48,9 @@ public static class DealCalculator
 
         var valueProposition =
             Customer.GetValueProposition(initialProduct, initialOfferData.Payment / initialOfferData.Quantity);
-        var productEnjoyment =
-            customer.GetProductEnjoyment(product, customerData.Standards.GetCorrespondingQuality());
+        // Must mirror Customer.EvaluateCounteroffer, which uses the quality-less overload
+        // (different normalisation: max 0.7 instead of 1.0, no quality term).
+        var productEnjoyment = customer.GetProductEnjoyment(product);
         var enjoymentT = Mathf.InverseLerp(-1f, 1f, productEnjoyment);
         var valueProposition2 = Customer.GetValueProposition(product, price / quantity);
         var quantityRatio = Mathf.Lerp(1f, 0f,
@@ -241,6 +242,48 @@ public static class DealCalculator
             result = (bestQuantity, bestPrice);
         }
 
+        if (Config.RoundQuantityToNearest5.Value)
+            result = RoundQuantityToFive(customer, product, result, maxSpend, initialOfferData);
+
         return result;
+    }
+
+    // Rounds the quantity to the nearest multiple of 5 (minimum 5) and re-prices it. Keeps the
+    // unrounded result if the rounded quantity can't reach the minimum success probability.
+    private static (int quantity, int price) RoundQuantityToFive(Customer customer, ProductDefinition product,
+        (int quantity, int price) result, float maxSpend, InitialOfferData initialOfferData)
+    {
+        var rounded = Math.Max(5, (int)Math.Round(result.quantity / 5.0, MidpointRounding.AwayFromZero) * 5);
+        if (rounded == result.quantity) return result;
+
+        if (initialOfferData == null)
+        {
+            var offered = customer.OfferedContractInfo;
+            if (offered is { Products.entries.Count: > 0 } && offered.Products.entries[0].Quantity > 0)
+                initialOfferData = new InitialOfferData
+                {
+                    ProductId = offered.Products.entries[0].ProductID,
+                    Quantity = offered.Products.entries[0].Quantity,
+                    Payment = offered.Payment
+                };
+        }
+
+        if (initialOfferData == null)
+        {
+            Main.Log("Quantity rounding skipped because the original offer is unavailable.", false, true);
+            return result;
+        }
+
+        // Search from $1 so rounding down never inherits a price that was only valid for more units.
+        var price = FindOptimalPrice(customer, product, rounded, 1f, maxSpend, -1f, initialOfferData);
+        var probability = CalculateSuccessProbability(customer, product, rounded, price, initialOfferData);
+        if (price <= 1 || probability < Config.MinSuccessProbability.Value)
+        {
+            Main.Log($"Quantity rounding {result.quantity} -> {rounded} rejected (price {price}, probability {probability:F3}); keeping {result.quantity}");
+            return result;
+        }
+
+        Main.Log($"Quantity rounded {result.quantity} -> {rounded}, price {result.price} -> {price} (probability {probability:F3})");
+        return (rounded, price);
     }
 }

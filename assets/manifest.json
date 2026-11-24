@@ -1,6 +1,6 @@
 {
     "name": "HighBaller",
-    "version_number": "2.7.11",
+    "version_number": "2.7.12",
     "website_url": "",
     "description": "Deal optimizer, auto counter offer, auto deal completion",
     "dependencies": [

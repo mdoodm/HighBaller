@@ -69,10 +69,38 @@ public class UIHandler
         _counterOfferDisplayText = text + "\n" + reasonText;
     }
 
+    // Price changes are detected by polling the product's price instead of patching
+    // ProductManager.SendPrice: that method is a networked ServerRpc and hooking it broke the
+    // +/- price buttons in the Products app (each click re-sent the same price).
+    private const float PriceRefreshDelay = 0.4f;
+    private float _lastSeenPrice = -1f;
+    private float _priceChangedAt = -1f;
+
+    private void RefreshSalesPanelOnPriceChange()
+    {
+        var entry = SelectedProduct;
+        if (entry == null || entry.Definition == null) return;
+        var price = entry.Definition.Price;
+        if (!Mathf.Approximately(price, _lastSeenPrice))
+        {
+            // Debounce so holding/clicking +/- repeatedly doesn't recalculate on every step.
+            _lastSeenPrice = price;
+            _priceChangedAt = Time.unscaledTime;
+            return;
+        }
+
+        if (_priceChangedAt < 0f || Time.unscaledTime - _priceChangedAt < PriceRefreshDelay) return;
+        _priceChangedAt = -1f;
+        Main.Log($"ProductManager: Price changed to {price} for {entry.Definition.ID}", false, false, true);
+        UpdateSalesInfoPanel(entry);
+    }
+
     public void UpdateSalesInfoPanel(ProductEntry entry, float? overridePrice = null)
     {
         _salesInfoFormatter.CancelPendingCalculation();
         SelectedProduct = entry;
+        _lastSeenPrice = entry != null && entry.Definition != null ? entry.Definition.Price : -1f;
+        _priceChangedAt = -1f;
         _salesPanel.IsVisible = true;
         _salesPanel.ScrollPosition = Vector2.zero;
         _salesPanel.Content = _salesInfoFormatter.FormatSalesInfo(entry, overridePrice);
@@ -145,7 +173,10 @@ public class UIHandler
         }
 
         if (ProductManagerApp != null && ProductManagerApp.isOpen && _salesPanel.IsVisible)
+        {
+            if (Event.current.type == EventType.Repaint) RefreshSalesPanelOnPriceChange();
             DrawSalesInfoPanel();
+        }
         if (!(ContactsApp.Instance == null) && ContactsApp.Instance.isOpen &&
             _contactPanel.IsVisible) DrawContactInfoPanel();
     }

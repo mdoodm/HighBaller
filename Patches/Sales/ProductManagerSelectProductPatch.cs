@@ -17,6 +17,7 @@ public static class ProductManagerSelectProductPatch
     public static void Prefix(ProductManagerApp __instance, ProductEntry entry)
     {
         UIHandler.ProductManagerApp = __instance;
+        PriceButtonFix.Apply(__instance);
     }
 
     private static void Postfix(ProductEntry entry)

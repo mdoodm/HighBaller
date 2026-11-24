@@ -19,15 +19,18 @@ public class DelayedPriceCalculator(
     float initialPrice,
     float minPrice,
     float maxPrice,
-    Action<(float optimalPrice, float noLossPrice)> callback)
+    Action<(float optimalPrice, float noLossPrice, float expectedRevenue, int expectedUnits)> callback)
 {
-    private readonly struct PriceCandidate(float price, int count)
+    private readonly struct PriceCandidate(float price, int count, float revenue, int units)
     {
         public float Price { get; } = price;
 
         public int Count { get; } = count;
 
-        public float Revenue => Price * Count;
+        // Sum of every interested customer's expected payment at this price (accounts for order size).
+        public float Revenue { get; } = revenue;
+
+        public int Units { get; } = units;
     }
 
     private object _coroutineToken;
@@ -64,7 +67,7 @@ public class DelayedPriceCalculator(
         {
             if (_isCancelled) yield break;
             var clampedPrice = Math.Min(p, maxPrice);
-            coarseResults.Add(new PriceCandidate(clampedPrice, CountAt(clampedPrice)));
+            coarseResults.Add(Evaluate(clampedPrice));
             if (coarseResults.Count % 5 == 0) yield return null;
         }
 
@@ -72,7 +75,7 @@ public class DelayedPriceCalculator(
         if (_isCancelled) yield break;
         if (coarseResults.Count == 0)
         {
-            callback((initialPrice, 0f));
+            callback((initialPrice, 0f, 0f, 0));
             yield break;
         }
 
@@ -84,7 +87,7 @@ public class DelayedPriceCalculator(
         for (var p = coarseBestPrice; p <= fineEnd; p++)
         {
             if (_isCancelled) yield break;
-            fineResults.Add(new PriceCandidate(p, CountAt(p)));
+            fineResults.Add(Evaluate(p));
             fineCounter++;
             if (fineCounter % 10 == 0) yield return null;
         }
@@ -96,26 +99,28 @@ public class DelayedPriceCalculator(
         allResults.AddRange(fineResults);
         if (allResults.Count == 0)
         {
-            callback((initialPrice, initialPrice));
+            callback((initialPrice, initialPrice, 0f, 0));
             yield break;
         }
 
         var finalMaxCount = allResults.Max(r => r.Count);
         var noLossPrice = allResults.Where(r => r.Count == finalMaxCount).Max(r => r.Price);
-        var optimalPrice = allResults
+        var best = allResults
             .OrderByDescending(r => r.Revenue)
             .ThenByDescending(r => r.Price)
-            .First().Price;
-        callback((optimalPrice, noLossPrice));
+            .First();
+        callback((best.Price, noLossPrice, best.Revenue, best.Units));
     }
 
-    private int CountAt(float price)
+    private PriceCandidate Evaluate(float price)
     {
-        return customerAppeals
+        var orders = customerAppeals
             .Where(customerAppeal =>
                 !(CustomerHelper.GetProductAppeal(product, customerAppeal.Customer, price) < 0.05f))
             .Select(customerAppeal =>
                 CustomerHelper.CalculatePaymentQuantity(product, customerAppeal.Customer, price))
-            .Count(paymentQuantityResult => paymentQuantityResult is { Quantity: > 0 });
+            .Where(paymentQuantityResult => paymentQuantityResult is { Quantity: > 0 })
+            .ToList();
+        return new PriceCandidate(price, orders.Count, orders.Sum(o => o.Payment), orders.Sum(o => o.Quantity));
     }
 }

@@ -11,17 +11,20 @@ Features:
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader) for the game.
 2. After installing MelonLoader for the game, run the game once for MelonLoader to setup. Exit the game.
 3. Download the [latest release](https://github.com/xyrilyn/Deal-Optimizer-Mod/releases/latest) and place it in `SteamLibrary/steamapps/common/Schedule I/Mods`.
+    - Copy **only one** DLL: `HighBaller-IL2CPP.dll` for the default branch, or `HighBaller-Mono.dll` for the `alternate` (Mono) branch. Having both in `Mods` stops the mod from loading.
 4. Run the game. The mod is enabled automatically and requires no further setup.
 5. To update the mod, follow step 3 again. To remove the mod, delete it from your Mods folder.
 
 ## Building
 
-1. The mod exists in two versions. Select the project folder based on the version of the game you are intending to run:
-    - Default: IL2CPP (.NET 6.0)
-    - Alternate: Mono (.NET Framework 3.5)
-2. You will likely need to update the references in the `.csproj` to point to wherever your game is installed on your machine. Remember to update the post build path as well.
-    - You can either do this manually or by using the Visual Studio 2022 Template provided in the [MelonLoader quickstart](https://melonwiki.xyz/#/modders/quickstart?id=visual-studio-template).
-3. Run `dotnet build` in the project folder. The `.dll` will be copied over to the `/Mods` folder in the game files directly.
+Target game version: **Schedule I 0.4.7f12** (MelonLoader 0.7.x).
+
+1. Install MelonLoader and run the game once so it generates `MelonLoader/Il2CppAssemblies`.
+2. Build against your own game install (references are taken from it, no game files are redistributed):
+    - IL2CPP (default branch, .NET 6): `dotnet build -c IL2CPP -p:GameDir="/path/to/Schedule I"`
+    - Mono (`alternate` beta branch, netstandard2.1): `dotnet build -c Mono -p:GameDir="/path/to/Schedule I (Mono)"`
+    - `GameDir` defaults to `~/.local/share/Steam/steamapps/common/Schedule I`.
+3. Copy `bin/<Config>/<tfm>/HighBaller-<Config>.dll` into the game's `Mods` folder. The build does not touch your game folder.
 
 ## License & Credits
 

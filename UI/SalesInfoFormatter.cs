@@ -100,6 +100,8 @@ internal class SalesInfoFormatter
         html.Append("<section>Price Optimization</section>\n")
             .Append($"<label>Original Price:</label> <value>{FormatCurrency(entry.Definition.Price)}</value>\n")
             .Append("<label>Optimal Price:</label> <value>Calculating...</value>\n")
+            .Append("<label>Expected Revenue:</label> <value>Calculating...</value>\n")
+            .Append("<label>Units Needed:</label> <value>Calculating...</value>\n")
             .Append("<label>No-Loss Price:</label> <value>Calculating...</value>\n")
             .Append("<label>Max Markup:</label> <value>Calculating...</value>\n");
 
@@ -116,10 +118,18 @@ internal class SalesInfoFormatter
             {
                 var optimalPrice = result.optimalPrice;
                 var noLossPrice = result.noLossPrice;
+                var perUnit = result.expectedUnits > 0 ? result.expectedRevenue / result.expectedUnits : 0f;
                 var contentLines = _salesPanel.Content.Split(['\n'], StringSplitOptions.None);
                 for (var j = 0; j < contentLines.Length; j++)
                     if (contentLines[j].Contains("Optimal Price:"))
                         contentLines[j] = "<label>Optimal Price:</label> <value>" + FormatCurrency(optimalPrice) +
+                                          "</value>\n";
+                    else if (contentLines[j].Contains("Expected Revenue:"))
+                        contentLines[j] = "<label>Expected Revenue:</label> <value>" +
+                                          FormatCurrency(result.expectedRevenue) + " (" + FormatCurrency(perUnit) +
+                                          "/unit)</value>\n";
+                    else if (contentLines[j].Contains("Units Needed:"))
+                        contentLines[j] = "<label>Units Needed:</label> <value>" + result.expectedUnits +
                                           "</value>\n";
                     else if (contentLines[j].Contains("No-Loss Price:"))
                         contentLines[j] = "<label>No-Loss Price:</label> <value>" + FormatCurrency(noLossPrice) +

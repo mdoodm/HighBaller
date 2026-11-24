@@ -32,6 +32,8 @@ public static class Config
 
     internal static MelonPreferences_Entry<bool> IncreaseQuantityEnabled;
 
+    internal static MelonPreferences_Entry<bool> RoundQuantityToNearest5;
+
     internal static MelonPreferences_Entry<bool> AutoHandoverEnabled;
 
     internal static MelonPreferences_Entry<bool> AlwaysAcceptCounterOffersEnabled;
@@ -84,6 +86,9 @@ public static class Config
         IncreaseQuantityEnabled = _dealOptimizerCategoryAutomation.CreateEntry("IncreaseQuantityEnabled", false,
             "Increase Quantity till max spend",
             "If enabled, the quantity will be increased until the max spend is reached");
+        RoundQuantityToNearest5 = _dealOptimizerCategoryAutomation.CreateEntry("RoundQuantityToNearest5", false,
+            "Round quantity to nearest 5",
+            "If enabled, suggested/auto counter-offer quantities are rounded to the nearest multiple of 5 (minimum 5) and re-priced");
         AutoHandoverEnabled = _dealOptimizerCategoryAutomation.CreateEntry("AutoHandoverEnabled", false,
             "Enable automatic handovers", "Whether to enable automatic handover");
 
