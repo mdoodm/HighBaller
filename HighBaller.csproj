@@ -12,7 +12,7 @@
         <LangVersion>latest</LangVersion>
         <RootNamespace>HighBaller</RootNamespace>
         <Version>2.7.12</Version>
-        <Authors>zocke18r, SFox, Virtunerd, k0Mods</Authors>
+        <Authors>xyrilyn, zocke18r, SFox, Virtunerd, k0Mods, mdoodm</Authors>
         <Description>Deal optimizer, auto counter offer, auto deal completion</Description>
         <Configurations>IL2CPP;Mono</Configurations>
         <Configuration Condition="'$(Configuration)' == ''">IL2CPP</Configuration>

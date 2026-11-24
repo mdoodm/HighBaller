@@ -13,8 +13,8 @@ using Il2CppScheduleOne.Product;
 using Il2CppScheduleOne.UI.Phone.Messages;
 #endif
 
-[assembly: MelonInfo(typeof(HighBaller.Main), "HighBaller", "2.7.12", "zocke18r,SFox & fixed by Virtunerd")]
-[assembly: MelonAdditionalCredits("0.4.7f6 compat by k0Mods, 0.4.7f12 stable update")]
+[assembly: MelonInfo(typeof(HighBaller.Main), "HighBaller", "2.7.12", "xyrilyn, zocke18r, SFox & Virtunerd")]
+[assembly: MelonAdditionalCredits("Original Deal Optimizer by xyrilyn; 0.4.7f6 compat by k0Mods; 0.4.7f12 update by mdoodm")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 #if MONO
