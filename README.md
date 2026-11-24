@@ -102,7 +102,14 @@ Open `UserData\MelonPreferences.cfg` after the first launch and change the value
 ## Good to know
 
 - Only you need the mod. Customers, deals and prices are all handled on your side.
-- With both DLLs in `Mods`, the log shows a short `is incompatible` notice for the other branch's build: `HighBaller (Mono)` on the default branch, `HighBaller` on the `alternate` branch. That's expected and harmless. Delete the DLL you don't need if you'd rather not see it.
+- With both DLLs in `Mods`, MelonLoader loads the build for your branch and logs a short `is incompatible` notice for the one it skips:
+
+  | Steam branch | Loads | Skips |
+  |---|---|---|
+  | Default (IL2CPP) | `HighBaller` | `HighBaller (Mono)` |
+  | `alternate` (Mono) | `HighBaller (Mono)` | `HighBaller` |
+
+  The notice is expected and harmless. Delete the DLL you don't need if you'd rather not see it.
 - The Mono build shows as `HighBaller (Mono)` in the log. Both builds share the same settings.
 - Auto counteroffer doesn't change the product the customer asked for. It only sets the quantity and price.
 - The odds shown are the game's own acceptance formula, so a 98% offer can still occasionally be turned down.
