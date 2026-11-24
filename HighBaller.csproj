@@ -19,6 +19,11 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
         <GameDir Condition="'$(GameDir)' == ''">$(HOME)/.local/share/Steam/steamapps/common/Schedule I</GameDir>
+        <!-- Release-quality output; keep local build paths out of the published DLLs. -->
+        <Optimize>true</Optimize>
+        <Deterministic>true</Deterministic>
+        <DebugType>none</DebugType>
+        <PathMap>$(MSBuildProjectDirectory)=/_/</PathMap>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Mono'">

@@ -125,7 +125,7 @@ dotnet build -c IL2CPP -p:GameDir="/path/to/Schedule I"   # default branch, .NET
 dotnet build -c Mono   -p:GameDir="/path/to/Schedule I"   # alternate branch, netstandard2.1
 ```
 
-Run the game once on the branch you're building for first (the IL2CPP build needs `MelonLoader/Il2CppAssemblies`). You can only build the Mono configuration while the game is on the Mono branch. `GameDir` defaults to `~/.local/share/Steam/steamapps/common/Schedule I`. The DLL goes to `bin/<Config>/<tfm>/`, and the build never writes to your game folder.
+Run the game once on the branch you're building for first (the IL2CPP build needs `MelonLoader/Il2CppAssemblies`). The Mono configuration needs the Mono branch's `Schedule I_Data/Managed` folder: build it while the game is on that branch, or point at a saved copy with `-p:ManagedDir=/path/to/Managed`. `GameDir` defaults to `~/.local/share/Steam/steamapps/common/Schedule I`. The DLL goes to `bin/<Config>/<tfm>/`, and the build never writes to your game folder.
 
 Found a bug? [Open an issue](https://github.com/mdoodm/HighBaller/issues/new) and attach `MelonLoader\Latest.log` with `DebugModeEnabled = true`.
 
