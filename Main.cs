@@ -13,20 +13,35 @@ using Il2CppScheduleOne.Product;
 using Il2CppScheduleOne.UI.Phone.Messages;
 #endif
 
-[assembly: MelonInfo(typeof(HighBaller.Main), "HighBaller", "2.7.12", "xyrilyn, zocke18r, SFox & Virtunerd")]
+[assembly: MelonInfo(typeof(HighBaller.Main), HighBaller.Main.MelonName, "2.7.12", "xyrilyn, zocke18r, SFox & Virtunerd")]
 [assembly: MelonAdditionalCredits("Original Deal Optimizer by xyrilyn; 0.4.7f6 compat by k0Mods; 0.4.7f12 update")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
+// Both DLLs can sit in Mods together: each build has its own melon name (identical names made
+// MelonLoader load neither) and declares its backend, so MelonLoader skips the other branch's DLL
+// before any of its code runs. The optional dependencies are the assemblies that only exist on
+// this build's branch; without them MelonLoader warns about the skipped DLL's missing references.
 #if MONO
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.MONO)]
+[assembly: MelonOptionalDependencies("ScheduleOne.Core", "FishNet.Runtime")]
 #else
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
+[assembly: MelonOptionalDependencies("Il2CppInterop.Runtime", "Il2Cppmscorlib", "Il2CppScheduleOne.Core",
+    "Il2CppFishNet.Runtime", "System.Collections", "System.Linq")]
 #endif
+// Patches are applied in OnInitializeMelon, after the backend check, instead of automatically on load.
+[assembly: HarmonyDontPatchAll]
 
 namespace HighBaller;
 
 public class Main : MelonMod
 {
+#if MONO
+    internal const string MelonName = "HighBaller (Mono)";
+#else
+    internal const string MelonName = "HighBaller";
+#endif
+
     internal static bool SuppressNextPriceEval;
 
     private string _lastCounterofferPriceText;
@@ -50,6 +65,7 @@ public class Main : MelonMod
     {
         UIHandler = new UIHandler();
         Config.Initialize();
+        HarmonyInstance.PatchAll(typeof(Main).Assembly);
         Log("Initialized HighBaller Fixed v" + Info.Version, false, false, true);
         Log(
             "DebugMode is " + (Config.DebugModeEnabled.Value ? "enabled" : "disabled") +

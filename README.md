@@ -1,14 +1,17 @@
-<h1 align="center">HighBaller</h1>
+<p align="center">
+<img src="assets/banner.svg" alt="HighBaller: a Schedule I counteroffer to Charles for OG Kush, quantity rounded from 7 to 5, price set to $259 with a 99.2% chance of acceptance against a 98% minimum, and log lines showing the deal booked for late night" width="100%">
+</p>
 
 <p align="center">
-Every counteroffer priced to land, every deal booked and handed over for you. Works on its own, nobody else needs it.
+Every counteroffer priced to land, every deal booked and handed over for you. Only you need it.
 </p>
 
 <p align="center">
 <img alt="Schedule I 0.4.7f12" src="https://img.shields.io/badge/Schedule%20I-0.4.7f12-e9e6df?labelColor=1a1e28">
 <img alt="IL2CPP and Mono builds" src="https://img.shields.io/badge/builds-IL2CPP%20%2B%20Mono-e9e6df?labelColor=1a1e28">
+<img alt="Only you install it" src="https://img.shields.io/badge/installed%20by-you%20only-e9e6df?labelColor=1a1e28">
 <img alt="MelonLoader 0.7" src="https://img.shields.io/badge/MelonLoader-0.7.x-e9e6df?labelColor=1a1e28">
-<img alt="GPL-3.0 licence" src="https://img.shields.io/badge/licence-GPL--3.0-d95fc8?labelColor=1a1e28">
+<img alt="GPL-3.0 licence" src="https://img.shields.io/badge/licence-GPL--3.0-e2b54a?labelColor=1a1e28">
 </p>
 
 <p align="center">
@@ -36,9 +39,6 @@ In Schedule I, every counteroffer is a guess, and every deal means a phone call,
 
 **Contacts.** Select a customer to open **Contact Information**: their spending limits, next order days, dealer and product preferences.
 
-> [!NOTE]
-> In 0.4.7f12, the game's own asking-price **+/−** buttons in the Products app don't respond to mouse clicks. HighBaller fixes them, so each click moves the price by $1.
-
 ## Install
 
 You need **Schedule I 0.4.7f12**, on either Steam branch.
@@ -51,10 +51,12 @@ You need **Schedule I 0.4.7f12**, on either Steam branch.
    | Default (most players) | `HighBaller-IL2CPP.dll` |
    | `alternate` (Mono) | `HighBaller-Mono.dll` |
 
-   Put in **only one**. Both builds have the same name, so with both in `Mods` MelonLoader loads neither (see [Good to know](#good-to-know)).
+   Not sure which branch you're on? Put both in `Mods`. MelonLoader loads the right one and skips the other (see [Good to know](#good-to-know)).
 3. Launch the game and load a save. The panels and the counteroffer readout work right away. The automatic features start off, and you turn them on in [Settings](#settings).
 
 To update, replace the DLL. Your settings carry over, and both builds share them.
+
+Switching Steam branches? With both DLLs in `Mods`, there's nothing to change.
 
 ## Settings
 
@@ -100,8 +102,8 @@ Open `UserData\MelonPreferences.cfg` after the first launch and change the value
 ## Good to know
 
 - Only you need the mod. Customers, deals and prices are all handled on your side.
-- Use the DLL for your branch, and swap it when you switch branches. With the wrong one, the log says `'HighBaller v2.7.12' is incompatible` and nothing loads.
-- Don't keep both DLLs in `Mods`. Unlike some mods, HighBaller can't pick the right one: both builds share a name, and MelonLoader loads neither.
+- With both DLLs in `Mods`, the log shows a short `is incompatible` notice for the other branch's build: `HighBaller (Mono)` on the default branch, `HighBaller` on the `alternate` branch. That's expected and harmless. Delete the DLL you don't need if you'd rather not see it.
+- The Mono build shows as `HighBaller (Mono)` in the log. Both builds share the same settings.
 - Auto counteroffer doesn't change the product the customer asked for. It only sets the quantity and price.
 - The odds shown are the game's own acceptance formula, so a 98% offer can still occasionally be turned down.
 - If a custom NPC has no customer data, HighBaller won't open a handover for them, rather than throw errors.
@@ -139,12 +141,13 @@ This version builds on k0Mods' 2.7.11. What's different:
 
 **Game version**
 - Updated for **Schedule I 0.4.7f12**, which split part of the game into a new `ScheduleOne.Core` assembly. 2.7.11 targets 0.4.7f6.
+- **Both DLLs can stay in `Mods`.** Each build now has its own name and is skipped on the other branch. With 2.7.11, having both made MelonLoader load neither.
 - IL2CPP and Mono build from one project, against your own game install. 2.7.11's build scripts wiped the game's `Mods` folder and relaunched the game after every build, and they've been removed.
 
 **Fixes**
 - **Counteroffer odds are accurate.** 2.7.11 rated customer enjoyment with a different formula from the one the game uses to accept a counteroffer. As a result, offers shown at 98% were sometimes refused. HighBaller now uses the game's own formula.
 - **Handovers open again.** In 0.4.7f12, 2.7.11 blocked the handover screen for every deal, so neither manual nor automatic handovers worked.
-- **Asking-price +/− buttons work.** In 0.4.7f12, the game's own price buttons in the Products app ignore mouse clicks. HighBaller connects them, so each click moves the price by $1.
+- **Asking-price +/− buttons work again.** With 2.7.11 installed, the +/− buttons next to a product's asking price in the Products app stopped responding, and you had to type prices in. 2.7.12 fixes this: each click moves the price by $1.
 - **No hook on the game's price networking.** 2.7.11 hooked the network call that sends a new price to the server. The Sales Information panel now watches the selected product's price instead.
 
 **New**
